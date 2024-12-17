@@ -14,7 +14,7 @@ end nes;
 
 architecture arch of nes is
 
-signal counter : unsigned(20 downto 0) := (others => '0'); --makes all 0 at beginning
+signal counter : unsigned(20 downto 0) := (others => '0'); 
 signal NESclk : std_logic;
 signal NEScounter : unsigned(7 downto 0);
 signal data_shift : std_logic_vector(7 downto 0);
@@ -27,15 +27,15 @@ process (clk) is
   begin
       if (rising_edge(clk)) then
           if(counter = 1_199_999) then
-              counter <= (others => '0'); --reset counter
+              counter <= (others => '0'); 
           else
               counter <= counter + 1;
           end if;
       end if;
 end process;
 
-NESclk <= counter(7); --NESclk is the 10th bit
-NEScounter <= counter(15 downto 8); -- use this as it will give us the desired frequency
+NESclk <= counter(7); 
+NEScounter <= counter(15 downto 8); 
 latch <= '1' when (NEScounter = 8d"255") else '0';
 controller_clk <= NESclk when NEScounter < 8d"8" else '0';
 process (NESclk) is
