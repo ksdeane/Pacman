@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all; 
 use IEEE.numeric_std.all;
 
+-- SHOULD CORRECT THIS MATH AND CONNECT VIA PORTMAP TO PATTERNGEN.VHD FOR CLEANER CODE
+
 entity collision_check is
 	port (
 		clk : in std_logic;
