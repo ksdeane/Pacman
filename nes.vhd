@@ -14,43 +14,50 @@ end nes;
 
 architecture arch of nes is
 
-signal counter : unsigned(20 downto 0) := (others => '0'); 
-signal NESclk : std_logic;
-signal NEScounter : unsigned(7 downto 0);
-signal data_shift : std_logic_vector(7 downto 0);
-signal data_hold :  std_logic_vector(7 downto 0);
-signal clk_count : unsigned(2 downto 0);
+signal count : unsigned(20 downto 0) := (others => '0'); 
+signal clk_nes : std_logic;
+signal count_nes : unsigned(7 downto 0);
+signal shift : std_logic_vector(7 downto 0);
+signal data_o :  std_logic_vector(7 downto 0);
+signal count_clk : unsigned(2 downto 0);
 
 begin
 
 process (clk) is
   begin
       if (rising_edge(clk)) then
-          if(counter = 1_199_999) then
-              counter <= (others => '0'); 
+          if(count = 1_199_999) then
+              count <= (others => '0'); 
           else
-              counter <= counter + 1;
+              count <= count + 1;
           end if;
       end if;
 end process;
 
-NESclk <= counter(7); 
-NEScounter <= counter(15 downto 8); 
-latch <= '1' when (NEScounter = 8d"255") else '0';
-controller_clk <= NESclk when NEScounter < 8d"8" else '0';
-process (NESclk) is
+clk_nes <= count(7); 
+count_nes <= counter(15 downto 8); 
+latch <= '1' when (count_nes = 8d"255") else '0';
+controller_clk <= clk_nes when count_nes < 8d"8" else '0';
+process (clk_nes) is
 begin
-   if rising_edge(NESclk) then
-       if (NEScounter < "00001000") then
-           data_shift <= data_shift(6 downto 0) & data_in;
-           if (clk_count < "111") then
-               clk_count <= clk_count + 1;
+   if rising_edge(clk_nes) then
+       if (count_nes < "00001000") then
+           shift(7) <= shift(6);
+	   shift(6) <= shift(5);
+	   shift(5) <= shift(4);
+	   shift(4) <= shift(3);
+	   shift(3) <= shift(2);
+	   shift(2) <= shift(1);
+	   shift(1) <= shift(0);
+	   shift(0) <= data_in;
+           if (count_clk < "111") then
+               count_clk <= count_clk + 1;
            end if;
        end if;
    end if;
 end process;
-data_hold <= data_shift when clk_count = "111";
-data_out <= data_hold;
+data_o <= shift when count_clk = "111";
+data_out <= data_o;
 
 end;
 
